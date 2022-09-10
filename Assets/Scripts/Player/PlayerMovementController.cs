@@ -25,8 +25,15 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] float maxSlopeAngle;
     bool isStandingOnSlope = false;
 
+    [Header("Character Controller Collider Configuration")]
+    [SerializeField] Transform headBone;
+    [SerializeField] float headOffset;
+    [SerializeField] Transform feetBone;
+    [SerializeField] float feetOffset;
+
     void Start()
     {
+        CalculateCapsuleCollider();
         currentMoveVector = moveVector;
         verticalVelocity = transform.localPosition.y;
         moveSpeed = walkSpeed;
@@ -51,18 +58,26 @@ public class PlayerMovementController : MonoBehaviour
         moveVector = Quaternion.AngleAxis(cameraT.rotation.eulerAngles.y, Vector3.up) * moveVector;
         moveVector.Normalize();
 
-        if (isGrounded)
+        if (isStandingOnSlope)
+        {
+            float slope = Vector3.Dot(Vector3.Cross(moveVector, Vector3.down), Vector3.Cross(Vector3.up, slopeNormal));
+
+            if (slope < 0)
+                moveVector = Vector3.ProjectOnPlane(moveVector, slopeNormal).normalized;
+            else if (slope > 0)
+                moveVector = (moveVector * moveSpeed + (isStandingOnSlope && slope > 0 && moveVector != Vector3.zero ? Vector3.down * moveSpeed * 90F * Time.deltaTime : Vector3.zero)).normalized;
+        }
+        else if (isGrounded)
             verticalVelocity = 0;
         else
             verticalVelocity += gravity * Time.deltaTime;
 
         moveVector *= speed;
-        if (isStandingOnSlope)
-            moveVector = Vector3.ProjectOnPlane(moveVector, slopeNormal).normalized;
         currentMoveVector.y = verticalVelocity;
         currentMoveVector = Vector3.Lerp(currentMoveVector, moveVector, 100f * Time.deltaTime);
         characterController.Move(currentMoveVector * Time.deltaTime);
 
+        Debug.DrawLine(transform.position, transform.position + moveVector);
         if (moveVector.x != 0 || moveVector.z != 0)
             transform.Rotate(Vector3.up * (Vector3.SignedAngle(transform.forward, moveVector, Vector3.up) * 10f * Time.deltaTime), Space.World);
     }
@@ -72,12 +87,12 @@ public class PlayerMovementController : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity))
         {
+            slopeNormal = hit.normal;
             Debug.DrawRay(transform.position, Vector3.down);
-            if (hit.distance < 0.1f)
+            if (hit.distance <= 0.08f)
             {
                 float angle = Vector3.Angle(Vector3.up, hit.normal);
                 isStandingOnSlope = angle < maxSlopeAngle && angle != 0;
-                slopeNormal = hit.normal;
                 isGrounded = true;
             }
             else
@@ -91,5 +106,11 @@ public class PlayerMovementController : MonoBehaviour
             isStandingOnSlope = false;
             isGrounded = false;
         }
+    }
+
+    void CalculateCapsuleCollider()
+    {
+        characterController.height = headBone.position.y + headOffset - feetBone.position.y - feetOffset;
+        characterController.center = new Vector3(0, (headBone.position.y + headOffset + feetBone.position.y + feetOffset) / 2, 0);
     }
 }

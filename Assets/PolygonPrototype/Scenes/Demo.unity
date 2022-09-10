@@ -21478,7 +21478,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 671013930}
   m_LocalRotation: {x: 0.2079117, y: -0, z: -0, w: 0.9781476}
-  m_LocalPosition: {x: 0, y: 3.1726727, z: -4.4306955}
+  m_LocalPosition: {x: 0, y: 1.9768671, z: -1.7448719}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8032056172554577327}
@@ -52061,7 +52061,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1674916652}
   m_LocalRotation: {x: 0.2079117, y: -0, z: -0, w: 0.9781476}
-  m_LocalPosition: {x: 0, y: 3.1726727, z: -4.4306955}
+  m_LocalPosition: {x: 0, y: 1.9768671, z: -1.7448719}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8032056172554577327}
@@ -52088,7 +52088,7 @@ MonoBehaviour:
   Yaw: 0
   Pitch: 24
   Roll: 0
-  zoomLevel: 4.85
+  zoomLevel: 1.91
 --- !u!1001 &1678338647
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -67554,7 +67554,6 @@ GameObject:
   - component: {fileID: 8032056172554942870}
   - component: {fileID: 8032056172554942869}
   - component: {fileID: 8032056172554942868}
-  - component: {fileID: 8032056172554942866}
   - component: {fileID: 8032056172554942864}
   m_Layer: 0
   m_Name: Characters
@@ -67581,6 +67580,10 @@ MonoBehaviour:
   cameraT: {fileID: 671013935}
   gravity: -9.8
   maxSlopeAngle: 45
+  headBone: {fileID: 8032056172554577293}
+  headOffset: 0.22
+  feetBone: {fileID: 8032056172554577337}
+  feetOffset: -0.05
 --- !u!1 &8032056172554942865
 GameObject:
   m_ObjectHideFlags: 0
@@ -67598,23 +67601,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &8032056172554942866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8032056172554942863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f2a0042eacf6f0408fc9d70c225c0cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerCharacterController: {fileID: 8032056172554942869}
-  headBone: {fileID: 8032056172554577293}
-  headOffset: 0.22
-  feetBone: {fileID: 8032056172554577337}
-  feetOffset: -0.05
 --- !u!1 &8032056172554942867
 GameObject:
   m_ObjectHideFlags: 0
@@ -67684,7 +67670,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 3
+  m_CollisionDetection: 0
 --- !u!1 &8032056172554942873
 GameObject:
   m_ObjectHideFlags: 0
