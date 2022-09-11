@@ -13,6 +13,7 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] float runSpeed;
 
     [Header("Locomotion")]
+    [SerializeField] Animator playerAnimator;
     Vector3 moveVector;
     Vector3 currentMoveVector;
     [SerializeField] Transform cameraT;
@@ -58,28 +59,45 @@ public class PlayerMovementController : MonoBehaviour
         moveVector = Quaternion.AngleAxis(cameraT.rotation.eulerAngles.y, Vector3.up) * moveVector;
         moveVector.Normalize();
 
-        if (isStandingOnSlope)
+
+        if (isGrounded)
         {
-            float slope = Vector3.Dot(Vector3.Cross(moveVector, Vector3.down), Vector3.Cross(Vector3.up, slopeNormal));
+            if (isStandingOnSlope)
+            {
+                float slope = Vector3.Dot(Vector3.Cross(moveVector, Vector3.down), Vector3.Cross(Vector3.up, slopeNormal));
 
-            if (slope < 0)
-                moveVector = Vector3.ProjectOnPlane(moveVector, slopeNormal).normalized;
-            else if (slope > 0)
-                moveVector = (moveVector * moveSpeed + (isStandingOnSlope && slope > 0 && moveVector != Vector3.zero ? Vector3.down * moveSpeed * 90F * Time.deltaTime : Vector3.zero)).normalized;
+                if (slope < 0)
+                    moveVector = Vector3.ProjectOnPlane(moveVector, slopeNormal).normalized;
+                else if (slope > 0)
+                    moveVector = (moveVector * moveSpeed + (isStandingOnSlope && slope > 0 && moveVector != Vector3.zero ? Vector3.down * moveSpeed * 90F * Time.deltaTime : Vector3.zero)).normalized;
+                
+                verticalVelocity = 0;
+            }
+            else
+            {
+                verticalVelocity = gravity;
+            }
         }
-        else if (isGrounded)
-            verticalVelocity = 0;
         else
+        {
             verticalVelocity += gravity * Time.deltaTime;
-
+        }
         moveVector *= speed;
         currentMoveVector.y = verticalVelocity;
         currentMoveVector = Vector3.Lerp(currentMoveVector, moveVector, 100f * Time.deltaTime);
         characterController.Move(currentMoveVector * Time.deltaTime);
 
-        Debug.DrawLine(transform.position, transform.position + moveVector);
-        if (moveVector.x != 0 || moveVector.z != 0)
-            transform.Rotate(Vector3.up * (Vector3.SignedAngle(transform.forward, moveVector, Vector3.up) * 10f * Time.deltaTime), Space.World);
+        playerAnimator.SetFloat("Forward", speed / moveSpeed);
+
+        Debug.DrawLine(transform.position, transform.position + currentMoveVector);
+        if (currentMoveVector.x != 0 || currentMoveVector.z != 0)
+        {
+            Quaternion lookRotation = Quaternion.LookRotation(new Vector3(currentMoveVector.x, transform.forward.y, currentMoveVector.z), Vector3.up);
+            if (lookRotation != Quaternion.Euler(Vector3.zero))
+            {
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, 1000f * Time.deltaTime);
+            }
+        }
     }
 
     void CheckPlayerGround()
